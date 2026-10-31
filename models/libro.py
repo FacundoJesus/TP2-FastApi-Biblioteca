@@ -1,5 +1,7 @@
-from sqlmodel import Field, Relationship, SQLModel;
+from sqlmodel import Field, Relationship, SQLModel
 from models.prestamo import Prestamo;
+from models.autor import Autor;
+from models.libro_autor import LibroAutorLink;
 
 class Libro(SQLModel):
     titulo: str = Field(max_length=72, min_length=4)
@@ -12,3 +14,5 @@ class LibroDB(Libro, table=True):
     id: int | None = Field(default=None, primary_key=True)
     # Relación 1 a N: Un libro tiene una lista de préstamos
     prestamos: list["Prestamo"] = Relationship(back_populates="libro")
+    # Relación N a N: Un libro tiene una lista de autores
+    autores: list["Autor"] = Relationship(back_populates="libros", link_model=LibroAutorLink)
