@@ -68,6 +68,8 @@ class AutorService(AutorServiceInterface):
         datos = payload.model_dump(exclude_unset=True)
         if "nombre" in datos and datos["nombre"] is None:
             raise DatosAutorInvalidosException("El nombre del autor no puede ser nulo")
+        if "nacionalidad" in datos and datos["nacionalidad"] is None:
+            raise DatosAutorInvalidosException("La nacionalidad del autor no puede ser nula")
         return self.repo.update_autor(autor, datos)
 
     def delete_autor(self, autor_id: int) -> None:

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 class Autor(SQLModel):
     nombre: str = Field(min_length=3, max_length=100)
-    nacionalidad: str | None = Field(default=None, max_length=50)
+    nacionalidad: str = Field(min_length=2, max_length=50)
 
 
 class AutorDB(Autor, table=True):
