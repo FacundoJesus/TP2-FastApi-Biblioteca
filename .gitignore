@@ -221,3 +221,7 @@ __marimo__/
 
 # Local SQLite database
 *.db
+
+
+# Local IA
+AGENTS.md
