@@ -1,24 +1,36 @@
+# isort: skip_file
 from typing import Annotated
+
 from fastapi import Depends
+from sqlmodel import Session
 
-# Autores
-from services.autor_service import AutorService
-AutorServiceDep = Annotated[AutorService, Depends(AutorService)]
+from repositories.database import get_session
 
-from repositories.autor_repository import AutorRepository
+# 1. Sesión de base de datos
+SessionDep = Annotated[Session, Depends(get_session)]
+
+# 2. Repositorios (dependen de SessionDep)
+from repositories.autor_repository import AutorRepository  # noqa: E402
+
 AutorRepositoryDep = Annotated[AutorRepository, Depends(AutorRepository)]
 
-# Libros
-from services.libro_service import LibroService
-LibroServiceDep = Annotated[LibroService, Depends(LibroService)]
+from repositories.libro_repository import LibroRepository  # noqa: E402
 
-from repositories.libro_repository import LibroRepository
 LibroRepositoryDep = Annotated[LibroRepository, Depends(LibroRepository)]
 
+from repositories.socio_repository import SocioRepository  # noqa: E402
 
-# Socios
-from services.socio_service import SocioService
-SocioServiceDep = Annotated[SocioService, Depends(SocioService)]
-
-from repositories.socio_repository import SocioRepository
 SocioRepositoryDep = Annotated[SocioRepository, Depends(SocioRepository)]
+
+# 3. Servicios (dependen de *RepositoryDep)
+from services.autor_service import AutorService  # noqa: E402
+
+AutorServiceDep = Annotated[AutorService, Depends(AutorService)]
+
+from services.libro_service import LibroService  # noqa: E402
+
+LibroServiceDep = Annotated[LibroService, Depends(LibroService)]
+
+from services.socio_service import SocioService  # noqa: E402
+
+SocioServiceDep = Annotated[SocioService, Depends(SocioService)]
