@@ -1,7 +1,12 @@
-from sqlmodel import Field, Relationship, SQLModel
 from datetime import date
-from models.libro import LibroDB
-from models.socio import SocioDB
+from typing import TYPE_CHECKING
+
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from models.libro import LibroDB
+    from models.socio import SocioDB
+
 
 class Prestamo(SQLModel):
     fecha_prestamo: date = Field(default_factory=date.today)

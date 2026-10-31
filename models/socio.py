@@ -1,5 +1,9 @@
+from typing import TYPE_CHECKING
+
 from sqlmodel import Field, Relationship, SQLModel
-from models.prestamo import PrestamoDB
+
+if TYPE_CHECKING:
+    from models.prestamo import PrestamoDB
 
 
 class Socio(SQLModel):
@@ -10,7 +14,7 @@ class Socio(SQLModel):
 
 class SocioDB(Socio, table=True):
     __tablename__ = "socios"
-    
+
     id: int | None = Field(default=None, primary_key=True)
     # Relación 1 a N: Un socio tiene una lista de préstamos
     prestamos: list["PrestamoDB"] = Relationship(back_populates="socio")

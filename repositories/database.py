@@ -2,6 +2,8 @@ from collections.abc import Generator
 
 from sqlmodel import Session, SQLModel, create_engine
 
+import models  # noqa: F401
+
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
