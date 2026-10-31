@@ -23,9 +23,9 @@ from repositories.socio_repository import SocioRepository  # noqa: E402
 SocioRepositoryDep = Annotated[SocioRepository, Depends(SocioRepository)]
 
 # 3. Servicios (dependen de *RepositoryDep)
-from services.autor_service import AutorService  # noqa: E402
+from services.autor_service import AutorService, AutorServiceInterface  # noqa: E402
 
-AutorServiceDep = Annotated[AutorService, Depends(AutorService)]
+AutorServiceDep = Annotated[AutorServiceInterface, Depends(AutorService)]
 
 from services.libro_service import LibroService  # noqa: E402
 
