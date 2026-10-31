@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 
-from api.payload.autor_dto import AutorCreate, AutorPatch, AutorUpdate
+from api.payload.autor_dto import (
+    AutorCreateRequest,
+    AutorPatchRequest,
+    AutorUpdateRequest,
+)
 from dependencies import AutorRepositoryDep
 from exceptions import (
     AutorConLibrosException,
@@ -21,15 +25,15 @@ class AutorServiceInterface(ABC):
         ...
 
     @abstractmethod
-    def create_autor(self, payload: AutorCreate) -> AutorDB:
+    def create_autor(self, payload: AutorCreateRequest) -> AutorDB:
         ...
 
     @abstractmethod
-    def replace_autor(self, autor_id: int, payload: AutorUpdate) -> AutorDB:
+    def replace_autor(self, autor_id: int, payload: AutorUpdateRequest) -> AutorDB:
         ...
 
     @abstractmethod
-    def update_autor(self, autor_id: int, payload: AutorPatch) -> AutorDB:
+    def update_autor(self, autor_id: int, payload: AutorPatchRequest) -> AutorDB:
         ...
 
     @abstractmethod
@@ -50,16 +54,16 @@ class AutorService(AutorServiceInterface):
             raise AutorNoEncontradoException(autor_id)
         return autor
 
-    def create_autor(self, payload: AutorCreate) -> AutorDB:
+    def create_autor(self, payload: AutorCreateRequest) -> AutorDB:
         nuevo_autor = AutorDB.model_validate(payload)
         return self.repo.create_autor(nuevo_autor)
 
-    def replace_autor(self, autor_id: int, payload: AutorUpdate) -> AutorDB:
+    def replace_autor(self, autor_id: int, payload: AutorUpdateRequest) -> AutorDB:
         autor = self.get_autor_by_id(autor_id)
         datos = payload.model_dump()
         return self.repo.update_autor(autor, datos)
 
-    def update_autor(self, autor_id: int, payload: AutorPatch) -> AutorDB:
+    def update_autor(self, autor_id: int, payload: AutorPatchRequest) -> AutorDB:
         autor = self.get_autor_by_id(autor_id)
         datos = payload.model_dump(exclude_unset=True)
         if "nombre" in datos and datos["nombre"] is None:

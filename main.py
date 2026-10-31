@@ -25,9 +25,9 @@ def create_dummy_data() -> None:
             return
 
         # 2. Creamos algunos Autores primero
-        autor1 = AutorDB(nombre="Jorge Luis Borges")
-        autor2 = AutorDB(nombre="Julio Cortázar")
-        autor3 = AutorDB(nombre="Gabriel García Márquez")
+        autor1 = AutorDB(nombre="Jorge Luis Borges", nacionalidad="Argentino")
+        autor2 = AutorDB(nombre="Julio Cortázar", nacionalidad="Argentino")
+        autor3 = AutorDB(nombre="Gabriel García Márquez", nacionalidad="Colombiano")
 
         session.add_all([autor1, autor2, autor3])
         session.commit()  # Guardamos para que la BD les asigne IDs
