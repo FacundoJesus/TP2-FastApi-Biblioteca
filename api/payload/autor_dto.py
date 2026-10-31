@@ -13,16 +13,16 @@ class AutorResponse(SQLModel):
 GetAutoresResponse = AutorResponse
 
 
-class AutorCreate(SQLModel):
+class AutorCreateRequest(SQLModel):
     nombre: str = Field(min_length=3, max_length=100)
     nacionalidad: str | None = Field(default=None, max_length=50)
 
 
-class AutorUpdate(SQLModel):
+class AutorUpdateRequest(SQLModel):
     nombre: str = Field(min_length=3, max_length=100)
     nacionalidad: str | None = Field(default=None, max_length=50)
 
 
-class AutorPatch(SQLModel):
+class AutorPatchRequest(SQLModel):
     nombre: str | None = Field(default=None, min_length=3, max_length=100)
     nacionalidad: str | None = Field(default=None, max_length=50)

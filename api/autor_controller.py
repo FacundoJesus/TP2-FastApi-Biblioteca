@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, status
 
-from api.payload.autor_dto import AutorCreate, AutorPatch, AutorResponse, AutorUpdate
+from api.payload.autor_dto import AutorCreateRequest, AutorPatchRequest, AutorResponse, AutorUpdateRequest
 from dependencies import AutorServiceDep
 from exceptions import (
     AutorConLibrosException,
@@ -36,13 +36,13 @@ def get_autor(autor_id: int, service: AutorServiceDep) -> AutorDB:
 
 # Crear Autor
 @router.post("", response_model=AutorResponse, status_code=status.HTTP_201_CREATED)
-def create_autor(autor: AutorCreate, service: AutorServiceDep) -> AutorDB:
+def create_autor(autor: AutorCreateRequest, service: AutorServiceDep) -> AutorDB:
     return service.create_autor(autor)
 
 
 # Actualizar Autor (reemplazo completo)
 @router.put("/{autor_id}", response_model=AutorResponse, status_code=status.HTTP_200_OK)
-def replace_autor(autor_id: int, autor: AutorUpdate, service: AutorServiceDep) -> AutorDB:
+def replace_autor(autor_id: int, autor: AutorUpdateRequest, service: AutorServiceDep) -> AutorDB:
     try:
         return service.replace_autor(autor_id, autor)
     except AutorNoEncontradoException as exc:
@@ -51,7 +51,7 @@ def replace_autor(autor_id: int, autor: AutorUpdate, service: AutorServiceDep) -
 
 # Actualizar Autor (parcial)
 @router.patch("/{autor_id}", response_model=AutorResponse, status_code=status.HTTP_200_OK)
-def update_autor(autor_id: int, autor: AutorPatch, service: AutorServiceDep) -> AutorDB:
+def update_autor(autor_id: int, autor: AutorPatchRequest, service: AutorServiceDep) -> AutorDB:
     try:
         return service.update_autor(autor_id, autor)
     except AutorNoEncontradoException as exc:
