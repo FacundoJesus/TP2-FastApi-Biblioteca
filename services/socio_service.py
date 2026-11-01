@@ -18,7 +18,12 @@ from models import PrestamoDB, SocioDB
 
 class SocioServiceInterface(ABC):
     @abstractmethod
-    def get_socios(self, offset: int = 0, limit: int = 50) -> Sequence[SocioDB]:
+    def get_socios(
+        self,
+        offset: int = 0,
+        limit: int = 50,
+        activos: bool | None = None,
+    ) -> Sequence[SocioDB]:
         ...
 
     @abstractmethod
@@ -59,8 +64,13 @@ class SocioService(SocioServiceInterface):
         if existente is not None and existente.id != socio_id_actual:
             raise EmailDuplicadoException(email)
 
-    def get_socios(self, offset: int = 0, limit: int = 50) -> Sequence[SocioDB]:
-        return self.repo.get_socios(offset, limit)
+    def get_socios(
+        self,
+        offset: int = 0,
+        limit: int = 50,
+        activos: bool | None = None,
+    ) -> Sequence[SocioDB]:
+        return self.repo.get_socios(offset=offset, limit=limit, activos=activos)
 
     def get_socio_by_id(self, socio_id: int) -> SocioDB:
         socio = self.repo.get_socio_by_id(socio_id)

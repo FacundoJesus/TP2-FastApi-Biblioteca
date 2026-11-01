@@ -10,8 +10,18 @@ class SocioRepository:
     def __init__(self, session: SessionDep) -> None:
         self.session = session
 
-    def get_socios(self, offset: int = 0, limit: int = 50) -> Sequence[SocioDB]:
-        statement = select(SocioDB).offset(offset).limit(limit)
+    def get_socios(
+        self,
+        offset: int = 0,
+        limit: int = 50,
+        activos: bool | None = None,
+    ) -> Sequence[SocioDB]:
+        statement = select(SocioDB)
+
+        if activos is not None:
+            statement = statement.where(col(SocioDB.activo) == activos)
+
+        statement = statement.offset(offset).limit(limit)
         return self.session.exec(statement).all()
 
     def get_socio_by_id(self, socio_id: int) -> SocioDB | None:

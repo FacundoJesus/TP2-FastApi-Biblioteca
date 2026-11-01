@@ -22,14 +22,19 @@ from models import PrestamoDB, SocioDB
 router = APIRouter(prefix="/socios", tags=["Socios"])
 
 
-# Obtener Socios
+# Obtener Socios (incluye GET /socios?activos=true)
 @router.get("", response_model=Sequence[SocioResponse], status_code=status.HTTP_200_OK)
 def get_socios(
     service: SocioServiceDep,
     offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[int, Query(ge=1, le=50)] = 50,
+    activos: bool | None = None,
 ) -> Sequence[SocioDB]:
-    return service.get_socios(offset, limit)
+    return service.get_socios(
+        offset=offset,
+        limit=limit,
+        activos=activos,
+    )
 
 
 # Obtener Socio por ID
