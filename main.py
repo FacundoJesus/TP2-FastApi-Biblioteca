@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from datetime import date, timedelta
 
 from fastapi import FastAPI
 from sqlmodel import Session, select
@@ -7,6 +8,8 @@ from sqlmodel import Session, select
 from api import autor_controller, libro_controller, socio_controller
 from models.autor import AutorDB
 from models.libro import LibroDB
+from models.prestamo import PrestamoDB
+from models.socio import SocioDB
 from repositories.database import create_db_and_tables, engine
 
 
@@ -58,6 +61,56 @@ def create_dummy_data() -> None:
 
         # 4. Guardamos los libros con sus relaciones
         session.add_all([libro1, libro2, libro3])
+        session.commit()
+
+        # 5. Creamos 3 Socios (2 activos y 1 inactivo para pruebas)
+        socio1 = SocioDB(
+            nombre="Juan Pérez",
+            email="juan.perez@utn.edu.ar",
+            activo=True,
+        )
+        socio2 = SocioDB(
+            nombre="María López",
+            email="maria.lopez@utn.edu.ar",
+            activo=True,
+        )
+        socio3 = SocioDB(
+            nombre="Carlos Gómez",
+            email="carlos.gomez@utn.edu.ar",
+            activo=False,
+        )
+
+        session.add_all([socio1, socio2, socio3])
+        session.commit()
+
+        # 6. Creamos algunos Préstamos de prueba (activos, vencidos y devueltos)
+        hoy = date.today()
+        prestamo1 = PrestamoDB(
+            socio=socio1,
+            libro=libro1,
+            fecha_prestamo=hoy - timedelta(days=3),
+            fecha_vencimiento=hoy + timedelta(days=11),
+            fecha_devolucion=None,
+            multa=0.0,
+        )
+        prestamo2 = PrestamoDB(
+            socio=socio1,
+            libro=libro2,
+            fecha_prestamo=hoy - timedelta(days=20),
+            fecha_vencimiento=hoy - timedelta(days=6),
+            fecha_devolucion=hoy - timedelta(days=4),
+            multa=200.0,
+        )
+        prestamo3 = PrestamoDB(
+            socio=socio2,
+            libro=libro3,
+            fecha_prestamo=hoy - timedelta(days=15),
+            fecha_vencimiento=hoy - timedelta(days=1),
+            fecha_devolucion=None,
+            multa=0.0,
+        )
+
+        session.add_all([prestamo1, prestamo2, prestamo3])
         session.commit()
 
 
