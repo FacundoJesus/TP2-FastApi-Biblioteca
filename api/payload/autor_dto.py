@@ -1,13 +1,13 @@
 from sqlmodel import Field, SQLModel
 
-from api.payload.libro_dto import LibroResponse
+from api.payload.libro_dto import LibroResumenResponse
 
 
 class AutorResponse(SQLModel):
     id: int
     nombre: str
     nacionalidad: str
-    libros: list[LibroResponse] = []
+    libros: list[LibroResumenResponse] = []
 
 
 GetAutoresResponse = AutorResponse

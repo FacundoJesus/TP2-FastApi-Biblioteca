@@ -11,6 +11,7 @@ from exceptions.base_exceptions import (
     ReglaNegocioException,
 )
 from exceptions.libro_exceptions import (
+    AutorYaAsociadoException,
     DatosLibroInvalidosException,
     IsbnDuplicadoException,
     LibroConPrestamosException,
@@ -29,6 +30,7 @@ from exceptions.socio_exceptions import (
 __all__ = [
     "AutorConLibrosException",
     "AutorNoEncontradoException",
+    "AutorYaAsociadoException",
     "ConflictoNegocioException",
     "DatosAutorInvalidosException",
     "DatosLibroInvalidosException",

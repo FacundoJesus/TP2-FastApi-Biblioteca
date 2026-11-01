@@ -27,9 +27,9 @@ from services.autor_service import AutorService, AutorServiceInterface  # noqa: 
 
 AutorServiceDep = Annotated[AutorServiceInterface, Depends(AutorService)]
 
-from services.libro_service import LibroService  # noqa: E402
+from services.libro_service import LibroService, LibroServiceInterface  # noqa: E402
 
-LibroServiceDep = Annotated[LibroService, Depends(LibroService)]
+LibroServiceDep = Annotated[LibroServiceInterface, Depends(LibroService)]
 
 from services.socio_service import SocioService  # noqa: E402
 

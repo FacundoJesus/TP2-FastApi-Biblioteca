@@ -36,6 +36,14 @@ class IsbnDuplicadoException(ConflictoNegocioException):
 
 
 # Excepcion con status = 409:
+class AutorYaAsociadoException(ConflictoNegocioException):
+    def __init__(self, libro_id: int, autor_id: int) -> None:
+        super().__init__(
+            f"El autor con id {autor_id} ya está asociado al libro con id {libro_id}"
+        )
+
+
+# Excepcion con status = 409:
 class LibroConPrestamosException(ConflictoNegocioException):
     def __init__(self) -> None:
         super().__init__("No se puede eliminar un libro que tiene préstamos registrados")
