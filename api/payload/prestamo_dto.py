@@ -1,8 +1,13 @@
 from datetime import date
 
-from sqlmodel import SQLModel
+from sqlmodel import Field, SQLModel
 
 from api.payload.libro_dto import LibroResumenResponse
+
+
+class PrestamoCreateRequest(SQLModel):
+    socio_id: int = Field(gt=0)
+    libro_id: int = Field(gt=0)
 
 
 class PrestamoResponse(SQLModel):

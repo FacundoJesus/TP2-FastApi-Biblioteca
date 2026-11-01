@@ -18,6 +18,10 @@ from exceptions.libro_exceptions import (
     LibroNoEncontradoException,
     LibroSinStockException,
 )
+from exceptions.prestamo_exceptions import (
+    PrestamoNoEncontradoException,
+    PrestamoYaDevueltoException,
+)
 from exceptions.socio_exceptions import (
     DatosSocioInvalidosException,
     EmailDuplicadoException,
@@ -42,6 +46,8 @@ __all__ = [
     "LibroNoEncontradoException",
     "LibroSinStockException",
     "OperacionProhibidaException",
+    "PrestamoNoEncontradoException",
+    "PrestamoYaDevueltoException",
     "RecursoNoEncontradoException",
     "ReglaNegocioException",
     "SocioConPrestamosException",

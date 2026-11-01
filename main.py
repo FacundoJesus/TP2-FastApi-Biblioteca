@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from fastapi import FastAPI
 from sqlmodel import Session, select
 
-from api import autor_controller, libro_controller, socio_controller
+from api import autor_controller, libro_controller, prestamo_controller, socio_controller
 from models.autor import AutorDB
 from models.libro import LibroDB
 from models.prestamo import PrestamoDB
@@ -19,6 +19,7 @@ app = FastAPI(title="TP2 - Biblioteca API")
 app.include_router(libro_controller.router)
 app.include_router(autor_controller.router)
 app.include_router(socio_controller.router)
+app.include_router(prestamo_controller.router)
 
 
 def create_dummy_data() -> None:
