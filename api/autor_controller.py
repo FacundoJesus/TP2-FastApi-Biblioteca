@@ -1,10 +1,10 @@
 from collections.abc import Sequence
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from api.payload.autor_dto import AutorCreateRequest, AutorPatchRequest, AutorResponse, AutorUpdateRequest
-from dependencies import AutorServiceDep
+from dependencies import AutorServiceDep, ROL_BIBLIOTECARIO, require_role
 from exceptions import (
     AutorConLibrosException,
     AutorNoEncontradoException,
@@ -35,13 +35,23 @@ def get_autor(autor_id: int, service: AutorServiceDep) -> AutorDB:
 
 
 # Crear Autor
-@router.post("", response_model=AutorResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=AutorResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def create_autor(autor: AutorCreateRequest, service: AutorServiceDep) -> AutorDB:
     return service.create_autor(autor)
 
 
 # Actualizar Autor (reemplazo completo)
-@router.put("/{autor_id}", response_model=AutorResponse, status_code=status.HTTP_200_OK)
+@router.put(
+    "/{autor_id}",
+    response_model=AutorResponse,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def replace_autor(autor_id: int, autor: AutorUpdateRequest, service: AutorServiceDep) -> AutorDB:
     try:
         return service.replace_autor(autor_id, autor)
@@ -50,7 +60,12 @@ def replace_autor(autor_id: int, autor: AutorUpdateRequest, service: AutorServic
 
 
 # Actualizar Autor (parcial)
-@router.patch("/{autor_id}", response_model=AutorResponse, status_code=status.HTTP_200_OK)
+@router.patch(
+    "/{autor_id}",
+    response_model=AutorResponse,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def update_autor(autor_id: int, autor: AutorPatchRequest, service: AutorServiceDep) -> AutorDB:
     try:
         return service.update_autor(autor_id, autor)
@@ -61,7 +76,11 @@ def update_autor(autor_id: int, autor: AutorPatchRequest, service: AutorServiceD
 
 
 # Eliminar Autor
-@router.delete("/{autor_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{autor_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def delete_autor(autor_id: int, service: AutorServiceDep) -> None:
     try:
         service.delete_autor(autor_id)

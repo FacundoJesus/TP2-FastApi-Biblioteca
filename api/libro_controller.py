@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from api.payload.libro_dto import (
     LibroCreateRequest,
@@ -9,7 +9,7 @@ from api.payload.libro_dto import (
     LibroResponse,
     LibroUpdateRequest,
 )
-from dependencies import LibroServiceDep
+from dependencies import LibroServiceDep, ROL_BIBLIOTECARIO, require_role
 from exceptions import (
     AutorYaAsociadoException,
     DatosLibroInvalidosException,
@@ -48,7 +48,12 @@ def get_libro(id: int, service: LibroServiceDep) -> LibroDB:
 
 
 # Crear Libro
-@router.post("", response_model=LibroResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=LibroResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def create_libro(libro: LibroCreateRequest, service: LibroServiceDep) -> LibroDB:
     try:
         return service.create_libro(libro)
@@ -61,6 +66,7 @@ def create_libro(libro: LibroCreateRequest, service: LibroServiceDep) -> LibroDB
     "/{id}/autores/{autor_id}",
     response_model=LibroResponse,
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
 )
 def asociar_autor_a_libro(id: int, autor_id: int, service: LibroServiceDep) -> LibroDB:
     try:
@@ -72,7 +78,12 @@ def asociar_autor_a_libro(id: int, autor_id: int, service: LibroServiceDep) -> L
 
 
 # Actualizar Libro (reemplazo completo)
-@router.put("/{id}", response_model=LibroResponse, status_code=status.HTTP_200_OK)
+@router.put(
+    "/{id}",
+    response_model=LibroResponse,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def replace_libro(
     id: int,
     libro: LibroUpdateRequest,
@@ -87,7 +98,12 @@ def replace_libro(
 
 
 # Actualizar Libro (parcial)
-@router.patch("/{id}", response_model=LibroResponse, status_code=status.HTTP_200_OK)
+@router.patch(
+    "/{id}",
+    response_model=LibroResponse,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def update_libro(
     id: int,
     libro: LibroPatchRequest,
@@ -104,7 +120,11 @@ def update_libro(
 
 
 # Eliminar Libro
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def delete_libro(id: int, service: LibroServiceDep) -> None:
     try:
         service.delete_libro(id)

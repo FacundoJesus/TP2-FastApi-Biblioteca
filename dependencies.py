@@ -45,3 +45,60 @@ from services.prestamo_service import (  # noqa: E402
 )
 
 PrestamoServiceDep = Annotated[PrestamoServiceInterface, Depends(PrestamoService)]
+
+# 4. Autorización y Roles vía Headers HTTP
+from collections.abc import Callable, Sequence  # noqa: E402
+from fastapi import Header, HTTPException, status  # noqa: E402
+
+ROL_BIBLIOTECARIO = "bibliotecario"
+ROL_SOCIO = "socio"
+ROLES_VALIDOS = (ROL_BIBLIOTECARIO, ROL_SOCIO)
+
+
+def get_current_role(
+    x_rol: Annotated[
+        str,
+        Header(
+            alias="X-Rol",
+            description="Rol del usuario solicitante: 'bibliotecario' o 'socio'",
+        ),
+    ] = ROL_SOCIO,
+) -> str:
+    rol_limpio = x_rol.lower().strip()
+    if rol_limpio not in ROLES_VALIDOS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Rol inválido '{x_rol}'. Valores permitidos: {', '.join(ROLES_VALIDOS)}",
+        )
+    return rol_limpio
+
+
+RoleDep = Annotated[str, Depends(get_current_role)]
+
+
+def get_current_socio_id(
+    x_socio_id: Annotated[
+        int | None,
+        Header(
+            alias="X-Socio-Id",
+            description="ID del socio solicitante (requerido para consultas privadas de socio)",
+        ),
+    ] = None,
+) -> int | None:
+    return x_socio_id
+
+
+SocioIdDep = Annotated[int | None, Depends(get_current_socio_id)]
+
+
+def require_role(roles_permitidos: Sequence[str]) -> Callable[..., str]:
+    def check_role(rol: RoleDep) -> str:
+        if rol not in roles_permitidos:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Operación restringida: se requiere uno de los siguientes roles: {', '.join(roles_permitidos)}",
+            )
+        return rol
+
+    return check_role
+

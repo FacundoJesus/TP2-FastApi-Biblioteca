@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from api.payload.prestamo_dto import PrestamoResponse
 from api.payload.socio_dto import (
@@ -10,7 +10,14 @@ from api.payload.socio_dto import (
     SocioResponse,
     SocioUpdateRequest,
 )
-from dependencies import SocioServiceDep
+from dependencies import (
+    ROL_BIBLIOTECARIO,
+    ROL_SOCIO,
+    RoleDep,
+    SocioIdDep,
+    SocioServiceDep,
+    require_role,
+)
 from exceptions import (
     DatosSocioInvalidosException,
     EmailDuplicadoException,
@@ -55,8 +62,21 @@ def get_socio(id: int, service: SocioServiceDep) -> SocioDB:
 def get_prestamos_socio(
     id: int,
     service: SocioServiceDep,
+    rol: RoleDep,
+    socio_id: SocioIdDep,
     activos: bool | None = None,
 ) -> Sequence[PrestamoDB]:
+    if rol == ROL_SOCIO:
+        if socio_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Debe incluir la cabecera 'X-Socio-Id' con su ID de socio al operar como socio",
+            )
+        if socio_id != id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Un socio solo puede consultar sus propios préstamos",
+            )
     try:
         return service.get_prestamos_socio(id, activos=activos)
     except SocioNoEncontradoException as exc:
@@ -64,7 +84,12 @@ def get_prestamos_socio(
 
 
 # Crear Socio
-@router.post("", response_model=SocioResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=SocioResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def create_socio(socio: SocioCreateRequest, service: SocioServiceDep) -> SocioDB:
     try:
         return service.create_socio(socio)
@@ -73,7 +98,12 @@ def create_socio(socio: SocioCreateRequest, service: SocioServiceDep) -> SocioDB
 
 
 # Actualizar Socio (reemplazo completo)
-@router.put("/{id}", response_model=SocioResponse, status_code=status.HTTP_200_OK)
+@router.put(
+    "/{id}",
+    response_model=SocioResponse,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def replace_socio(
     id: int,
     socio: SocioUpdateRequest,
@@ -88,7 +118,12 @@ def replace_socio(
 
 
 # Actualizar Socio (parcial)
-@router.patch("/{id}", response_model=SocioResponse, status_code=status.HTTP_200_OK)
+@router.patch(
+    "/{id}",
+    response_model=SocioResponse,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def update_socio(
     id: int,
     socio: SocioPatchRequest,
@@ -105,7 +140,11 @@ def update_socio(
 
 
 # Eliminar Socio
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_role([ROL_BIBLIOTECARIO]))],
+)
 def delete_socio(id: int, service: SocioServiceDep) -> None:
     try:
         service.delete_socio(id)

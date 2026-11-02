@@ -1,3 +1,7 @@
+from exceptions.auth_exceptions import (
+    AccesoDenegadoRolException,
+    SocioIdRequeridoException,
+)
 from exceptions.autor_exceptions import (
     AutorConLibrosException,
     AutorNoEncontradoException,
@@ -32,6 +36,7 @@ from exceptions.socio_exceptions import (
 )
 
 __all__ = [
+    "AccesoDenegadoRolException",
     "AutorConLibrosException",
     "AutorNoEncontradoException",
     "AutorYaAsociadoException",
@@ -51,6 +56,7 @@ __all__ = [
     "RecursoNoEncontradoException",
     "ReglaNegocioException",
     "SocioConPrestamosException",
+    "SocioIdRequeridoException",
     "SocioInactivoException",
     "SocioLimitePrestamosException",
     "SocioNoEncontradoException",
