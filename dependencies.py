@@ -55,12 +55,33 @@ ROL_SOCIO = "socio"
 ROLES_VALIDOS = (ROL_BIBLIOTECARIO, ROL_SOCIO)
 
 
+def require_bibliotecario(
+    x_rol: Annotated[
+        str | None,
+        Header(
+            alias="X-Rol",
+            description="Rol del usuario solicitante: 'bibliotecario'",
+            examples=["bibliotecario"],
+        ),
+    ] = None,
+) -> str:
+    if not x_rol or x_rol.lower().strip() != ROL_BIBLIOTECARIO:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Operación restringida: se requiere rol 'bibliotecario'",
+        )
+    return x_rol.lower().strip()
+
+
+RequireBibliotecarioDep = Annotated[str, Depends(require_bibliotecario)]
+
+
 def get_current_role(
     x_rol: Annotated[
         str,
         Header(
             alias="X-Rol",
-            description="Rol del usuario solicitante: 'bibliotecario' o 'socio'",
+            description="Rol del usuario solicitante: 'socio'",
         ),
     ] = ROL_SOCIO,
 ) -> str:
@@ -74,6 +95,7 @@ def get_current_role(
 
 
 RoleDep = Annotated[str, Depends(get_current_role)]
+RoleSocioDep = RoleDep
 
 
 def get_current_socio_id(
@@ -92,6 +114,9 @@ SocioIdDep = Annotated[int | None, Depends(get_current_socio_id)]
 
 
 def require_role(roles_permitidos: Sequence[str]) -> Callable[..., str]:
+    if list(roles_permitidos) == [ROL_BIBLIOTECARIO]:
+        return require_bibliotecario
+
     def check_role(rol: RoleDep) -> str:
         if rol not in roles_permitidos:
             raise HTTPException(
